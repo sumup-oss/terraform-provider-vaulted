@@ -36,6 +36,14 @@ E.g installation on a Linux AMD64 host
 
 And we're ready to use it!
 
+## Typical Terraform workflow
+
+![Typical terraform workflow](./.github/terraform-flow.png)
+
+## Terraform workflow with usage of https://github.com/sumup/vaulted and this provider
+
+![Terraform workflow with vaulted](./.github/terraform-flow-vaulted.png)
+
 ## [Use cases](./USE_CASES.md)
 
 ## [Usage](./USAGE.md)
