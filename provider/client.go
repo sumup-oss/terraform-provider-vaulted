@@ -111,10 +111,6 @@ func (c *Client) Read(path string) (*api.Secret, error) {
 
 	if v2 {
 		path = c.addPrefixToVKVPath(path, mountPath, "data")
-		if err != nil {
-			return nil, err
-		}
-
 		versionParam = map[string]string{
 			"version": fmt.Sprintf("%d", latestVersion),
 		}

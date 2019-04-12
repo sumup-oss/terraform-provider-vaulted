@@ -20,7 +20,7 @@ notifications:
 before_script:
   - go install github.com/golangci/golangci-lint/cmd/golangci-lint
 script:
-  - golangci-lint run
+  - go run mage.go -v lint
   - go run mage.go -v test
 after_success:
   - go get github.com/mitchellh/gox
