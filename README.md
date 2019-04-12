@@ -20,6 +20,14 @@ Tested and used against https://github.com/hashicorp/vault official docker image
 
 Check [magefile.go](./magefile.go) for up-to-date info what the test suite matrix uses.
 
+## Typical Terraform workflow
+
+![Typical terraform workflow](./.github/terraform-flow.png)
+
+## Terraform workflow with usage of https://github.com/sumup/vaulted and this provider
+
+![Terraform workflow with vaulted](./.github/terraform-flow-vaulted.png)
+
 ## Installation
 
 1. Download latest GitHub release locally for your OS and architecture.
@@ -35,14 +43,6 @@ E.g installation on a Linux AMD64 host
 ```
 
 And we're ready to use it!
-
-## Typical Terraform workflow
-
-![Typical terraform workflow](./.github/terraform-flow.png)
-
-## Terraform workflow with usage of https://github.com/sumup/vaulted and this provider
-
-![Terraform workflow with vaulted](./.github/terraform-flow-vaulted.png)
 
 ## [Use cases](./USE_CASES.md)
 
