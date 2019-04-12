@@ -15,6 +15,10 @@ env:
   - GO111MODULE=on
 git:
   depth: 1
+cache:
+  directories:
+    - $HOME/.cache/go-build
+    - $HOME/gopath/pkg/mod
 notifications:
   email: false
 before_script:
