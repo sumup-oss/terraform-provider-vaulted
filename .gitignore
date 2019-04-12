@@ -1,0 +1,12 @@
+.idea
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+dist/
+/terraform-provider-vaulted
+/terraform-provider-vaulted.exe
+/terraform-provider-vaulted.exe~

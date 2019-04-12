@@ -1,0 +1,37 @@
+sudo: false
+language: go
+branches:
+  only:
+    - master
+    # NOTE: Tagged commits
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+go:
+  - 1.12.x
+os:
+  - linux
+env:
+  - GO111MODULE=on
+git:
+  depth: 1
+notifications:
+  email: false
+before_script:
+  - go install github.com/golangci/golangci-lint/cmd/golangci-lint
+script:
+  - golangci-lint run
+  - go run mage.go -v test
+after_success:
+  - go get github.com/mitchellh/gox
+  - '[ "${TRAVIS_TAG}" != "" ] && [ "${TRAVIS_GO_VERSION}" = "1.12.x" ] && gox -os="linux darwin" -arch="amd64" -output "dist/{{.Dir}}-${TRAVIS_TAG}_{{.OS}}_{{.Arch}}"'
+deploy:
+  provider: releases
+  overwrite: true
+  skip_cleanup: true
+  api_key:
+    secure: pQs3G27xRBVRiVeaIW/nlj1dJlZm12NPQSMOxp4w3MPyO+lRquFRUMxU1VmxmFLwF/ZNo8HEZ/B8xA5lx9b/PIvAjyVhIpy7F0j7EPmp4FxnZ46ElMliBEXCXDUTC3bsPRU7F/zboN9RULn6MTb0wKfZhLYmknGngunExk45PYbcbVV6SlI6RGa5Iicl5w0DIkb9ZYBUAsJZ7TD9+3IqiUTq4X1P+rYJUNeznFRQKdO5xrE/OP0NAlHA60V0PMqdf9SeC73/mN7xscYZkUpi5B7UGLSI5GURrS2lOKOtmp3EfkHIMOos34G4d/ByKwpFgUo5NrmW+P1Z3hEZqO42JIe8kwLSMslJ0zha0q8aB1BOlCO3GzarNtgLud3Y7fBX0LitwALzdRg94bj0iTkB5E7U+Pa33NGHBNhkERzLdT/0JURaSMG0y6LHm4WYgXXOg5xc2F0sA+9MKQfqwlXihTIxwjpbjxD3HA/iXYnraGIUrT48JdJIzESEYk8yIWdeOe37YzkzTz3fywpz1tBVk3eQUr5TK/nvF9XQFRTPBRRmAtwu5ziIkHCVcVuCv7tCccCJ6kdaesxGIRiP1xabbhrDcZrs/IAxaQB2g/frqb5C6yZHEw9bhPoz6V4+DPqlIObZo2JedyrqXsidtfJef81M49K2a3Bd71TGBYgLu5Y=
+  file_glob: true
+  file: dist/*
+  on:
+    repo: sumup-oss/terraform-provider-vaulted
+    go: 1.12.x
+    tags: true
