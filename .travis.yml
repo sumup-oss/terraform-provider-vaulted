@@ -7,6 +7,8 @@ branches:
     - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 go:
   - 1.12.x
+services:
+  - docker
 os:
   - linux
 env:
