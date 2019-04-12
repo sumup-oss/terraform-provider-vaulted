@@ -6,6 +6,15 @@ The following apply here as well.
 
 https://github.com/sumup-oss/vaulted#prerequisites
 
+## Simple integration approach
+
+1. Generate RSA keypair by following https://github.com/sumup-oss/vaulted#setup
+1. Specify `provider` by following https://github.com/sumup-oss/terraform-provider-vaulted/blob/master/USAGE.md#provider
+1. Add `vaulted_vault_secret` resources by following https://github.com/sumup-oss/terraform-provider-vaulted/blob/master/USAGE.md#new-resource
+1. `terraform plan`
+1. `terraform apply`
+1. :tada:
+
 ## Provider
 
 Specify in a terraform module (e.g `main.tf`)

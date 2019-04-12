@@ -5,15 +5,6 @@
 * ease-to-use Vault encrypted resources in plain-simple terraform.
 * provides necessary security tools to `rotate` or `rekey` secrets.
 
-## Simple integration approach
-
-1. Generate RSA keypair by following https://github.com/sumup-oss/vaulted#setup
-1. Specify `provider` by following https://github.com/sumup-oss/terraform-provider-vaulted/blob/master/USAGE.md#provider
-1. Add `vaulted_vault_secret` resources by following https://github.com/sumup-oss/terraform-provider-vaulted/blob/master/USAGE.md#new-resource
-1. `terraform plan`
-1. `terraform apply`
-1. :tada:
-
 ## Security measures
 
 * **Don't** commit your private key in your git repository.
