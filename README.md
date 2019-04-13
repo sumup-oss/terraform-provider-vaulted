@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/sumup-oss/vaulted.svg?branch=master)](https://travis-ci.org/sumup-oss/terraform-provider-vaulted)
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/sumup-oss/terraform-provider-vaulted)](https://goreportcard.com/report/github.com/sumup-oss/terraform-provider-vaulted)
+
 A terraform provider that utilizes https://github.com/sumup-oss/vaulted to provide 
  https://github.com/hashicorp/terraform for https://github.com/hashicorp/vault encrypted secrets via 
   `resource.vaulted_vault_secret` that:
