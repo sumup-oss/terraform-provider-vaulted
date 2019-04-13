@@ -20,6 +20,8 @@ Tested and used against https://github.com/hashicorp/vault official docker image
 
 Check [magefile.go](./magefile.go) for up-to-date info what the test suite matrix uses.
 
+Also shown at https://medium.com/@syndbg/provisioning-vault-encrypted-secrets-using-terraform-using-sumup-oss-vaulted-and-4aa9721d082c?source=friends_link&sk=9eabe1bbe6ba089fe176d94cf413862d
+
 ## Typical Terraform workflow
 
 ![Typical terraform workflow](./.github/terraform-flow.png)
