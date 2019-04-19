@@ -19,6 +19,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/sumup-oss/go-pkgs/logger"
 	"os"
 	"testing"
 )
@@ -44,7 +45,8 @@ func TestProvider(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			p := provider()
+			loggerInstance := logger.NewLogrusLogger()
+			p := provider(loggerInstance)
 
 			_, ok := p.(terraform.ResourceProvider)
 			require.True(t, ok)
@@ -59,7 +61,8 @@ func TestProvider(t *testing.T) {
 		func(t *testing.T) {
 			t.Parallel()
 
-			p := provider()
+			loggerInstance := logger.NewLogrusLogger()
+			p := provider(loggerInstance)
 
 			actual := p.Resources()
 			assert.Equal(t, 1, len(actual))
@@ -70,10 +73,11 @@ func TestProvider(t *testing.T) {
 	)
 }
 
-func TestProviderFunc(t *testing.T) {
+func TestFuncWithLogger(t *testing.T) {
 	t.Parallel()
 
-	actual := Func()
+	loggerInstance := logger.NewLogrusLogger()
+	actual := FuncWithLogger(loggerInstance)()
 	require.NotNil(t, actual)
 
 	_, ok := actual.(terraform.ResourceProvider)

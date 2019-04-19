@@ -17,6 +17,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/sumup-oss/go-pkgs/executor/vault"
 	"log"
 	"reflect"
 	"regexp"
@@ -66,7 +67,7 @@ func resourceVaultSecret() *schema.Resource {
 }
 
 func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*Client)
+	client := meta.(*vault.Client)
 	path := d.Get("path").(string)
 
 	payloadJSON, ok := d.Get("payload_json").(string)
@@ -95,7 +96,7 @@ func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
 }
 
 func vaultSecretDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*Client)
+	client := meta.(*vault.Client)
 
 	path := d.Id()
 
@@ -110,7 +111,7 @@ func vaultSecretDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*Client)
+	client := meta.(*vault.Client)
 	path := d.Id()
 
 	log.Printf("[DEBUG] Reading %s from Vault", path)
@@ -166,7 +167,7 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func decryptPayloadJson(client *Client, path, payloadJSON string) (map[string]interface{}, error) {
+func decryptPayloadJson(client *vault.Client, path, payloadJSON string) (map[string]interface{}, error) {
 	osExecutor := &os.RealOsExecutor{}
 	b64Svc := base64.NewBase64Service()
 	rsaSvc := rsa.NewRsaService(osExecutor)
@@ -184,7 +185,7 @@ func decryptPayloadJson(client *Client, path, payloadJSON string) (map[string]in
 			fmt.Errorf("unable to deserialize `payload_json` at %s. Err: %s", path, err)
 	}
 
-	decryptedPayload, err := encPayloadSvc.Decrypt(client.privateKey, deserializedPayload)
+	decryptedPayload, err := encPayloadSvc.Decrypt(client.PrivateKey(), deserializedPayload)
 	if err != nil {
 		return nil,
 			fmt.Errorf("unable to decrypt `payload_json` at %s. Err: %s", path, err)

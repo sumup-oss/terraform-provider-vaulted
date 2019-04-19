@@ -18,6 +18,9 @@ import (
 	stdRsa "crypto/rsa"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform/plugin"
+	"github.com/sumup-oss/go-pkgs/executor/vault"
+	"github.com/sumup-oss/go-pkgs/logger"
 	"log"
 	"strings"
 
@@ -30,11 +33,17 @@ import (
 	"github.com/sumup-oss/vaulted/pkg/rsa"
 )
 
-func Func() terraform.ResourceProvider {
-	return provider()
+func FuncWithLogger(logger logger.Logger) plugin.ProviderFunc {
+	return func() terraform.ResourceProvider {
+		return provider(logger)
+	}
 }
 
-func provider() terraform.ResourceProvider {
+func provider(logger logger.Logger) terraform.ResourceProvider {
+	providerConfigureWithLogger := func(d *schema.ResourceData) (interface{}, error) {
+		return providerConfigure(logger, d)
+	}
+
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"address": {
@@ -116,14 +125,14 @@ func provider() terraform.ResourceProvider {
 				Description: "Maximum TTL for secret leases requested by this provider",
 			},
 		},
-		ConfigureFunc: providerConfigure,
+		ConfigureFunc: providerConfigureWithLogger,
 		ResourcesMap: map[string]*schema.Resource{
 			"vaulted_vault_secret": resourceVaultSecret(),
 		},
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{}, error) {
 	config := api.DefaultConfig()
 	config.Address = d.Get("address").(string)
 
@@ -231,7 +240,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	client.SetToken(childTokenLease.Auth.ClientToken)
 
-	return newClient(client, privateKey), nil
+	return vault.NewClient(logger, client, privateKey), nil
 }
 
 func providerToken(d *schema.ResourceData) (string, error) {

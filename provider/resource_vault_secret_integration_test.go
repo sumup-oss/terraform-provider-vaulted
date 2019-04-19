@@ -20,6 +20,8 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/sumup-oss/go-pkgs/executor/vault"
+	"github.com/sumup-oss/go-pkgs/logger"
 	"github.com/sumup-oss/go-pkgs/os"
 	"github.com/sumup-oss/go-pkgs/testutils"
 	"github.com/sumup-oss/vaulted/pkg/aes"
@@ -54,7 +56,7 @@ resource "vaulted_vault_secret" "test" {
 func testActVaultSecretCheckDestroy(provider terraform.ResourceProvider) func(state *terraform.State) error {
 	return func(state *terraform.State) error {
 		meta := provider.(*schema.Provider).Meta()
-		client, ok := meta.(*Client)
+		client, ok := meta.(*vault.Client)
 		if !ok {
 			return fmt.Errorf(
 				"error getting meta of provider. " +
@@ -93,7 +95,7 @@ func testActVaultSecretCheckUpdate(
 		path := instanceState.ID
 
 		meta := provider.(*schema.Provider).Meta()
-		client, ok := meta.(*Client)
+		client, ok := meta.(*vault.Client)
 		if !ok {
 			return fmt.Errorf(
 				"error getting meta of provider. " +
@@ -178,7 +180,8 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 			serializedEncPayload, err := encPayloadSvc.Serialize(encPayload)
 			require.Nil(t, err)
 
-			provider := Func()
+			loggerInstance := logger.NewLogrusLogger()
+			provider := FuncWithLogger(loggerInstance)()
 			testProviders := testProviders(provider)
 
 			// NOTE: Don't enforce the `TF_ACC` environment variable requirement,
@@ -213,7 +216,7 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 			)
 
 			meta := provider.(*schema.Provider).Meta()
-			client, ok := meta.(*Client)
+			client, ok := meta.(*vault.Client)
 			if !ok {
 				t.Fatalf(
 					"error getting meta of provider. "+
@@ -299,7 +302,8 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 			newSerializedEncPayload, err := encPayloadSvc.Serialize(encPayload)
 			require.Nil(t, err)
 
-			provider := Func()
+			loggerInstance := logger.NewLogrusLogger()
+			provider := FuncWithLogger(loggerInstance)()
 			testProviders := testProviders(provider)
 
 			// NOTE: Don't enforce the `TF_ACC` environment variable requirement,
@@ -343,7 +347,7 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 			)
 
 			meta := provider.(*schema.Provider).Meta()
-			client, ok := meta.(*Client)
+			client, ok := meta.(*vault.Client)
 			if !ok {
 				t.Fatalf(
 					"error getting meta of provider. "+
@@ -422,7 +426,8 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 
 			assert.NotEqual(t, oldSerializedEncPayload, newSerializedEncPayload)
 
-			provider := Func()
+			loggerInstance := logger.NewLogrusLogger()
+			provider := FuncWithLogger(loggerInstance)()
 			testProviders := testProviders(provider)
 
 			// NOTE: Don't enforce the `TF_ACC` environment variable requirement,
@@ -533,7 +538,8 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 
 			assert.NotEqual(t, oldSerializedEncPayload, newSerializedEncPayload)
 
-			provider := Func()
+			loggerInstance := logger.NewLogrusLogger()
+			provider := FuncWithLogger(loggerInstance)()
 			testProviders := testProviders(provider)
 
 			// NOTE: Don't enforce the `TF_ACC` environment variable requirement,
@@ -566,7 +572,7 @@ func TestResourceVaultSecretIntegration(t *testing.T) {
 						{
 							PreConfig: func() {
 								meta := provider.(*schema.Provider).Meta()
-								client, ok := meta.(*Client)
+								client, ok := meta.(*vault.Client)
 								if !ok {
 									t.Fatalf(
 										"error getting meta of"+
