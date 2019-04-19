@@ -17,10 +17,11 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sumup-oss/go-pkgs/executor/vault"
 	"log"
 	"reflect"
 	"regexp"
+
+	"github.com/sumup-oss/go-pkgs/executor/vault"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/sumup-oss/go-pkgs/os"

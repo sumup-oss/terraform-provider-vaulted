@@ -18,11 +18,12 @@ import (
 	stdRsa "crypto/rsa"
 	"errors"
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/sumup-oss/go-pkgs/executor/vault"
 	"github.com/sumup-oss/go-pkgs/logger"
-	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
