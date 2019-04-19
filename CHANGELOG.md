@@ -53,6 +53,8 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.2.0
+
 ### Added
 
 * Testing against Vault `1.1.1` ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/1
