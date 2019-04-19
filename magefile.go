@@ -35,7 +35,7 @@ var (
 		"0.9.6",
 		"0.11.6",
 		"1.0.3",
-		"1.1.0",
+		"1.1.1",
 	}
 	vaultExperimentalImageVersions = []string{"latest"}
 )

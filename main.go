@@ -16,15 +16,20 @@ package main
 
 import (
 	"github.com/hashicorp/terraform/plugin"
+	"github.com/sumup-oss/go-pkgs/logger"
 
 	"github.com/sumup-oss/terraform-provider-vaulted/provider"
 )
 
 //nolint:deadcode,unused
 func main() {
+	loggerInstance := logger.NewLogrusLogger()
+	// TODO: Make it configurable
+	loggerInstance.SetLevel(logger.InfoLevel)
+
 	plugin.Serve(
 		&plugin.ServeOpts{
-			ProviderFunc: provider.Func,
+			ProviderFunc: provider.FuncWithLogger(loggerInstance),
 		},
 	)
 }
