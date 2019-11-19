@@ -22,7 +22,7 @@ cache:
 notifications:
   email: false
 before_script:
-  - go install github.com/golangci/golangci-lint/cmd/golangci-lint
+  - go install github.com/golangci/golangci-lint/cmd/golangci-lint@/v1.16.0
 script:
   - go run mage.go -v lint
   - go run mage.go -v test
