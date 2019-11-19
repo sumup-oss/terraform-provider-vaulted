@@ -53,6 +53,13 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.3.0
+
+### Changed
+
+* Updated to Terraform SDK 0.12.16
+
+
 ## v0.2.0
 
 ### Added
