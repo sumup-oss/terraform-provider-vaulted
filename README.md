@@ -43,7 +43,7 @@ E.g installation on a Linux AMD64 host
 ```
 # Assuming we already downloaded the binary at ~/Downloads/terraform-provider-vaulted_v0.2.0_linux_amd64
 > mkdir -p ~/.terraform.d/plugins/linux_amd64
-> mv ~/Downloads/terraform-provider-vaulted_v0.2.0_linux_amd64 ~/.terraform.d/plugins/linux_amd64/terraform-provider-vaulted
+> mv ~/Downloads/terraform-provider-vaulted_v0.2.0_linux_amd64 ~/.terraform.d/plugins/linux_amd64/terraform-provider-vaulted_v0.2.0
 ```
 
 And we're ready to use it!
