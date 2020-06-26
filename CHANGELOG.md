@@ -53,12 +53,15 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.4.0
+
+* Provider configuration attribute `private_key_content` ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/6
+
 ## v0.3.0
 
 ### Changed
 
 * Updated to Terraform SDK 0.12.16
-
 
 ## v0.2.0
 
