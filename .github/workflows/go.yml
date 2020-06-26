@@ -107,7 +107,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/vaulted-${{ steps.tag.outputs.TAG }}_darwin_amd64
+          asset_path: ./build/terrafomr-provider-vaulted-${{ steps.tag.outputs.TAG }}_darwin_amd64
           asset_name: vaulted-${{ steps.tag.outputs.TAG }}_darwin-amd64
           asset_content_type: application/octet-stream
 
@@ -117,6 +117,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/vaulted-${{ steps.tag.outputs.TAG }}_linux_amd64
+          asset_path: ./build/terraform-provider-vaulted-${{ steps.tag.outputs.TAG }}_linux_amd64
           asset_name: vaulted-${{ steps.tag.outputs.TAG }}_linux_amd64
           asset_content_type: application/octet-stream

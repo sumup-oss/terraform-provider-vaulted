@@ -15,6 +15,7 @@ require (
 	github.com/hashicorp/vault/api v1.0.5-0.20200317185738-82f498082f02
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/magefile/mage v1.9.0
+	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/sumup-oss/go-pkgs v0.0.0-20200519104547-45b130c89abb
 	github.com/sumup-oss/vaulted v0.1.0
