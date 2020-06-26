@@ -1,6 +1,6 @@
 # terraform-provider-vaulted
 
-[![Build Status](https://travis-ci.org/sumup-oss/vaulted.svg?branch=master)](https://travis-ci.org/sumup-oss/terraform-provider-vaulted)
+![Build status](https://github.com/sumup-oss/terraform-provider-vaulted/workflows/Go/badge.svg)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/sumup-oss/terraform-provider-vaulted)](https://goreportcard.com/report/github.com/sumup-oss/terraform-provider-vaulted)
 
