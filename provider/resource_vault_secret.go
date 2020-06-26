@@ -80,12 +80,13 @@ func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
 		)
 	}
 
-	data, err := decryptPayloadJson(client, path, payloadJSON)
+	data, err := decryptPayloadJSON(client, path, payloadJSON)
 	if err != nil {
 		return err
 	}
 
 	log.Printf("[DEBUG] Writing encrypted Vault secret to %s", path)
+
 	_, err = client.Write(path, data)
 	if err != nil {
 		return fmt.Errorf("error writing to Vault %s. Err: %s", path, err)
@@ -102,6 +103,7 @@ func vaultSecretDelete(d *schema.ResourceData, meta interface{}) error {
 	path := d.Id()
 
 	log.Printf("[DEBUG] Deleting vault encrypted secret from %q", path)
+
 	_, err := client.Delete(path)
 	if err != nil {
 		return fmt.Errorf("error deleting %q from Vault: %q", path, err)
@@ -127,7 +129,8 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	cleanPayloadJSON := newlinesRegex.ReplaceAllString(payloadJSON, "")
-	currentData, err := decryptPayloadJson(client, path, cleanPayloadJSON)
+
+	currentData, err := decryptPayloadJSON(client, path, cleanPayloadJSON)
 	if err != nil {
 		return fmt.Errorf(
 			"failed to decrypt current `payload_json` at %s. Err: %s",
@@ -142,9 +145,11 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 		// since it might be a network connectivity problem to Vault.
 		return fmt.Errorf("error reading from Vault. Err: %s", err)
 	}
+
 	if secret == nil {
 		log.Printf("[WARN] secret %s not found, removing from state", path)
 		d.SetId("")
+
 		return nil
 	}
 
@@ -168,7 +173,7 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func decryptPayloadJson(client *vault.Client, path, payloadJSON string) (map[string]interface{}, error) {
+func decryptPayloadJSON(client *vault.Client, path, payloadJSON string) (map[string]interface{}, error) {
 	osExecutor := &os.RealOsExecutor{}
 	b64Svc := base64.NewBase64Service()
 	rsaSvc := rsa.NewRsaService(osExecutor)
@@ -196,6 +201,7 @@ func decryptPayloadJson(client *vault.Client, path, payloadJSON string) (map[str
 	// sent `data` must be JSON object with keys.
 	// Anything in the keys is written in Vault.
 	var data map[string]interface{}
+
 	err = json.Unmarshal(decryptedPayload.Content.Plaintext, &data)
 	if err != nil {
 		return nil,
@@ -205,5 +211,6 @@ func decryptPayloadJson(client *vault.Client, path, payloadJSON string) (map[str
 				err,
 			)
 	}
+
 	return data, nil
 }

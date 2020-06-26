@@ -152,6 +152,7 @@ func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{
 
 	clientAuthCert := ""
 	clientAuthKey := ""
+
 	if len(clientAuthI) == 1 {
 		clientAuth := clientAuthI[0].(map[string]interface{})
 		clientAuthCert = clientAuth["cert_file"].(string)
@@ -188,30 +189,30 @@ func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{
 	switch privateKeyContent := privateKeyContentTypeless.(type) {
 	case string:
 		if privateKeyContent != "" {
-			fd, err := osExecutor.TempFile("", "vaulted-private-key-from-content")
-			if err != nil {
-				return nil, fmt.Errorf("failed to create temporary file for vaulted private key from content: %s", err)
+			fd, nestedErr := osExecutor.TempFile("", "vaulted-private-key-from-content")
+			if nestedErr != nil {
+				return nil, fmt.Errorf("failed to create temporary file for vaulted private key from content: %s", nestedErr)
 			}
 
-			_, err = fd.WriteString(privateKeyContent)
-			if err != nil {
+			_, nestedErr = fd.WriteString(privateKeyContent)
+			if nestedErr != nil {
 				return nil, fmt.Errorf(
 					"failed to write private key content to temporary file for vaulted private key: %s",
-					err,
+					nestedErr,
 				)
 			}
 
-			err = fd.Sync()
-			if err != nil {
+			nestedErr = fd.Sync()
+			if nestedErr != nil {
 				return nil, fmt.Errorf(
 					"failed to sync private key content to temporary file for vaulted private key: %s",
-					err,
+					nestedErr,
 				)
 			}
 
-			err = fd.Close()
-			if err != nil {
-				return nil, fmt.Errorf("failed to close temporary file for vaulted private key from content: %s", err)
+			nestedErr = fd.Close()
+			if nestedErr != nil {
+				return nil, fmt.Errorf("failed to close temporary file for vaulted private key from content: %s", nestedErr)
 			}
 
 			key, readErr := rsaSvc.ReadPrivateKeyFromPath(fd.Name())
@@ -222,13 +223,12 @@ func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{
 			privateKey = key
 
 			// NOTE: Clean up the private key from the disk
-			err = osExecutor.Remove(fd.Name())
-			if err != nil {
-				return nil, fmt.Errorf("failed to remove temporary file for vaulted private key from content: %s", err)
+			nestedErr = osExecutor.Remove(fd.Name())
+			if nestedErr != nil {
+				return nil, fmt.Errorf("failed to remove temporary file for vaulted private key from content: %s", nestedErr)
 			}
 		}
-	default:
-		// NOTE: Do nothing, try with `private_key_path`.
+	default: // NOTE: Do nothing, try with `private_key_path`.
 	}
 
 	if privateKey == nil {
@@ -264,12 +264,15 @@ func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{
 	if err != nil {
 		return nil, err
 	}
+
 	if token == "" {
 		return nil, errors.New("no vault token found")
 	}
 
 	client.SetToken(token)
+
 	renewable := false
+
 	childTokenLease, err := client.Auth().Token().Create(
 		&api.TokenCreateRequest{
 			DisplayName: "terraform",
@@ -305,14 +308,17 @@ func providerToken(d *schema.ResourceData) (string, error) {
 	if token := d.Get("token").(string); token != "" {
 		return token, nil
 	}
+
 	// NOTE: Use ~/.vault-token, or the configured token helper.
 	tokenHelper, err := config.DefaultTokenHelper()
 	if err != nil {
 		return "", fmt.Errorf("error getting token helper: %s", err)
 	}
+
 	token, err := tokenHelper.Get()
 	if err != nil {
 		return "", fmt.Errorf("error getting token: %s", err)
 	}
+
 	return strings.TrimSpace(token), nil
 }
