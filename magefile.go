@@ -137,7 +137,7 @@ func runTestAgainstVault(imageVersion string) error {
 }
 
 func Lint() error {
-	return sh.Run("golangci-lint", "run")
+	return sh.Run("golangci-lint", "run", "--timeout=10m")
 }
 
 func UnitTests() error {

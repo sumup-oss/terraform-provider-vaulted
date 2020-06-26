@@ -24,7 +24,6 @@ import (
 //nolint:deadcode,unused
 func main() {
 	loggerInstance := logger.NewLogrusLogger()
-	// TODO: Make it configurable
 	loggerInstance.SetLevel(logger.InfoLevel)
 
 	plugin.Serve(
