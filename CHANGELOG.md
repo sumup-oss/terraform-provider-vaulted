@@ -53,7 +53,16 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.4.1
+
+### Fixed
+
+* Fixed lack of checks for provider attributes `private_key_content` and `private_key_path` ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/7
+* Fixed Terraform provider SDK version not being compatible with terraform 0.12.x ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/7
+
 ## v0.4.0
+
+### Changed
 
 * Provider configuration attribute `private_key_content` ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/6
 
