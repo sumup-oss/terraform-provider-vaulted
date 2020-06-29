@@ -141,49 +141,12 @@ func provider(logger logger.Logger) terraform.ResourceProvider {
 	}
 }
 
-func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{}, error) {
-	configInstance := api.DefaultConfig()
-	configInstance.Address = d.Get("address").(string)
-
-	clientAuthI := d.Get("client_auth").([]interface{})
-	if len(clientAuthI) > 1 {
-		return nil, fmt.Errorf("client_auth block may appear only once")
-	}
-
-	clientAuthCert := ""
-	clientAuthKey := ""
-
-	if len(clientAuthI) == 1 {
-		clientAuth := clientAuthI[0].(map[string]interface{})
-		clientAuthCert = clientAuth["cert_file"].(string)
-		clientAuthKey = clientAuth["key_file"].(string)
-	}
-
-	err := configInstance.ConfigureTLS(
-		&api.TLSConfig{
-			CACert:     d.Get("ca_cert_file").(string),
-			CAPath:     d.Get("ca_cert_dir").(string),
-			Insecure:   d.Get("skip_tls_verify").(bool),
-			ClientCert: clientAuthCert,
-			ClientKey:  clientAuthKey,
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to configure TLS for Vault API: %s", err)
-	}
-
-	configInstance.HttpClient.Transport = logging.NewTransport("Vault", configInstance.HttpClient.Transport)
-
-	client, err := api.NewClient(configInstance)
-	if err != nil {
-		return nil, fmt.Errorf("failed to configure Vault API: %s", err)
-	}
-
-	osExecutor := &os.RealOsExecutor{}
-
+func readPrivateKey(
+	d *schema.ResourceData,
+	osExecutor os.OsExecutor,
+	rsaSvc *rsa.Service,
+) (*stdRsa.PrivateKey, error) {
 	var privateKey *stdRsa.PrivateKey
-
-	rsaSvc := rsa.NewRsaService(osExecutor)
 
 	privateKeyContentTypeless := d.Get("private_key_content")
 	switch privateKeyContent := privateKeyContentTypeless.(type) {
@@ -246,6 +209,60 @@ func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{
 		default:
 			return nil, fmt.Errorf("non-string private_key_path. actual: %#v", privateKeyPath)
 		}
+	}
+
+	if privateKey == nil {
+		return nil, errors.New("failed to read RSA private key from either `private_key_content` or" +
+			" `private_key_path` provider attributes")
+	}
+
+	return privateKey, nil
+}
+
+func providerConfigure(logger logger.Logger, d *schema.ResourceData) (interface{}, error) {
+	configInstance := api.DefaultConfig()
+	configInstance.Address = d.Get("address").(string)
+
+	clientAuthI := d.Get("client_auth").([]interface{})
+	if len(clientAuthI) > 1 {
+		return nil, fmt.Errorf("client_auth block may appear only once")
+	}
+
+	clientAuthCert := ""
+	clientAuthKey := ""
+
+	if len(clientAuthI) == 1 {
+		clientAuth := clientAuthI[0].(map[string]interface{})
+		clientAuthCert = clientAuth["cert_file"].(string)
+		clientAuthKey = clientAuth["key_file"].(string)
+	}
+
+	err := configInstance.ConfigureTLS(
+		&api.TLSConfig{
+			CACert:     d.Get("ca_cert_file").(string),
+			CAPath:     d.Get("ca_cert_dir").(string),
+			Insecure:   d.Get("skip_tls_verify").(bool),
+			ClientCert: clientAuthCert,
+			ClientKey:  clientAuthKey,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to configure TLS for Vault API: %s", err)
+	}
+
+	configInstance.HttpClient.Transport = logging.NewTransport("Vault", configInstance.HttpClient.Transport)
+
+	client, err := api.NewClient(configInstance)
+	if err != nil {
+		return nil, fmt.Errorf("failed to configure Vault API: %s", err)
+	}
+
+	osExecutor := &os.RealOsExecutor{}
+	rsaSvc := rsa.NewRsaService(osExecutor)
+
+	privateKey, err := readPrivateKey(d, osExecutor, rsaSvc)
+	if err != nil {
+		return nil, err
 	}
 
 	// In order to enforce our relatively-short lease TTL, we derive a
