@@ -108,7 +108,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/terraform-provider-vaulted-${{ steps.tag.outputs.TAG }}_darwin_amd64
-          asset_name: terraform-provider-vaulted-${{ steps.tag.outputs.TAG }}_darwin-amd64
+          asset_name: terraform-provider-vaulted-${{ steps.tag.outputs.TAG }}_darwin_amd64
           asset_content_type: application/octet-stream
 
       # TODO: Replace with glob pattern once `actions/upload-release-asset` supports it
