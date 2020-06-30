@@ -82,7 +82,7 @@ jobs:
 
       - name: Build release assets
         run: |
-          $(go env GOPATH)/bin/gox \
+          CGO_ENABLED=0 $(go env GOPATH)/bin/gox \
            -output='build/terraform-provider-vaulted-${{ steps.tag.outputs.TAG }}_{{ .OS }}_{{ .Arch }}' \
            -arch='amd64' \
            -os='linux darwin' \
