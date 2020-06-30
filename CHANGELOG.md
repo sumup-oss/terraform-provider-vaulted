@@ -53,6 +53,12 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.4.2
+
+### Fixed
+
+* Fixed Alpine compatibility of binaries ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/commit/77bc612e46a074e7a1adbb8ebac377f79d7ba402
+
 ## v0.4.1
 
 ### Fixed
