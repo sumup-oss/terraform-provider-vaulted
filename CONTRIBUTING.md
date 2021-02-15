@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-* **Signed and verified CLA**
-* Golang 1.12.x
-* (To run linter) https://github.com/golangci/golangci-lint in `$PATH`
+* **Signed and verified CLA**.
+* Golang 1.15.x or use https://github.com/syndbg/goenv to use correct go version.
+* (To run linter) https://github.com/golangci/golangci-lint in `$PATH`.
 * (To run integration tests) Docker 17/18.x.x installed and `docker` in `$PATH`.
 
 ## Common commands
@@ -33,10 +33,8 @@
 
 1. Check existing issues and verify that your issue is not already submitted.
  If it is, it's highly recommended to add  to that issue with your reports.
- 
-2. Open issue
-
-3. Be as detailed as possible - `go` version, what did you do, 
+1. Open issue
+1. Be as detailed as possible - `go` version, what did you do, 
 what did you expect to happen, what actually happened.
 
 ### Submitting a PR
