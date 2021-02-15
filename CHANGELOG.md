@@ -53,6 +53,12 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.4.3
+
+### Changed
+
+* Build with Golang 1.15.x (1.15.8) ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/
+
 ## v0.4.2
 
 ### Fixed
