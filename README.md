@@ -1,6 +1,6 @@
 # terraform-provider-vaulted
 
-![Build status](https://github.com/sumup-oss/terraform-provider-vaulted/workflows/Go/badge.svg)
+![Build status](https://github.com/sumup-oss/terraform-provider-vaulted/workflows/CI/badge.svg)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/sumup-oss/terraform-provider-vaulted)](https://goreportcard.com/report/github.com/sumup-oss/terraform-provider-vaulted)
 
