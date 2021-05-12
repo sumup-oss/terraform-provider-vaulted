@@ -22,7 +22,7 @@ Tested and used against https://github.com/hashicorp/vault official docker image
 
 Check [magefile.go](./magefile.go) for up-to-date info what the test suite matrix uses.
 
-Also shown at https://medium.com/@syndbg/provisioning-vault-encrypted-secrets-using-terraform-using-sumup-oss-vaulted-and-4aa9721d082c?source=friends_link&sk=9eabe1bbe6ba089fe176d94cf413862d
+Also shown at https://medium.com/@syndbg/provisioning-vault-encrypted-secrets-using-terraform-using-sumup-oss-vaulted-and-4aa9721d082c
 
 ## Typical Terraform workflow
 
@@ -33,6 +33,12 @@ Also shown at https://medium.com/@syndbg/provisioning-vault-encrypted-secrets-us
 ![Terraform workflow with vaulted](./.github/terraform-flow-vaulted.png)
 
 ## Installation
+
+### 0.12 Terraform and newer
+
+Use https://registry.terraform.io/providers/sumup-oss/vaulted/latest
+
+### Pre-0.12 Terraform
 
 1. Download latest GitHub release locally for your OS and architecture.
 2. Follow https://www.terraform.io/docs/configuration/providers.html#third-party-plugins

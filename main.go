@@ -25,7 +25,10 @@ import (
 	"github.com/sumup-oss/terraform-provider-vaulted/internal/provider"
 )
 
-var version = "dev"
+// these will be set by the goreleaser configuration
+// to appropriate values for the compiled binary.
+var version = "dev" // goreleaser can also pass the specific commit if you want
+// commit  string = ""
 
 func main() {
 	var debugMode bool
