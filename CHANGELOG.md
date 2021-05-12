@@ -53,6 +53,8 @@ Change line format:
 
 ## Unreleased (master)
 
+## v0.5.0
+
 ### Added
 
 * Add validation during `plan` for `vaulted_vault_secret` ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/16
