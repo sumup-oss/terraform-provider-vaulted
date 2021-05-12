@@ -11,3 +11,5 @@ dist/
 /terraform-provider-vaulted
 /terraform-provider-vaulted.exe
 /terraform-provider-vaulted.exe~
+sandbox/
+/mage_output_file.go

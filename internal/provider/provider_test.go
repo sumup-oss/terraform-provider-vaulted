@@ -15,8 +15,7 @@
 package provider
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/sumup-oss/go-pkgs/logger"
@@ -24,9 +23,28 @@ import (
 	"testing"
 )
 
-func testProviders(provider terraform.ResourceProvider) map[string]terraform.ResourceProvider {
-	return map[string]terraform.ResourceProvider{
-		"vaulted": provider.(*schema.Provider),
+type ProviderFactory struct {
+	provider *schema.Provider
+}
+
+func NewProviderFactory(providerVersion string) *ProviderFactory {
+	loggerInstance := logger.NewLogrusLogger()
+	loggerInstance.SetLevel(logger.DebugLevel)
+
+	return &ProviderFactory{
+		provider: New(loggerInstance, "dev")(),
+	}
+}
+
+func (p *ProviderFactory) Provider() *schema.Provider {
+	return p.provider
+}
+
+func (p *ProviderFactory) ProviderFactories() map[string]func() (*schema.Provider, error) {
+	return map[string]func() (*schema.Provider, error){
+		"vaulted": func() (*schema.Provider, error) {
+			return p.Provider(), nil
+		},
 	}
 }
 
@@ -46,12 +64,9 @@ func TestProvider(t *testing.T) {
 			t.Parallel()
 
 			loggerInstance := logger.NewLogrusLogger()
-			p := provider(loggerInstance)
+			p := New(loggerInstance, "dev")()
 
-			_, ok := p.(terraform.ResourceProvider)
-			require.True(t, ok)
-
-			actualErr := p.(*schema.Provider).InternalValidate()
+			actualErr := p.InternalValidate()
 			require.Nil(t, actualErr)
 		},
 	)
@@ -62,7 +77,7 @@ func TestProvider(t *testing.T) {
 			t.Parallel()
 
 			loggerInstance := logger.NewLogrusLogger()
-			p := provider(loggerInstance)
+			p := New(loggerInstance, "dev")()
 
 			actual := p.Resources()
 			assert.Equal(t, 1, len(actual))
@@ -71,15 +86,4 @@ func TestProvider(t *testing.T) {
 			assert.True(t, actual[0].SchemaAvailable)
 		},
 	)
-}
-
-func TestFuncWithLogger(t *testing.T) {
-	t.Parallel()
-
-	loggerInstance := logger.NewLogrusLogger()
-	actual := FuncWithLogger(loggerInstance)()
-	require.NotNil(t, actual)
-
-	_, ok := actual.(terraform.ResourceProvider)
-	require.True(t, ok)
 }

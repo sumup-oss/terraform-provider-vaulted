@@ -26,8 +26,6 @@ linters-settings:
     # NOTE: Too-low cyclomatic complexity value
     # results into worse code design and readability.
     min-complexity: 25
-  maligned:
-    suggest-new: true
   dupl:
     threshold: 100
   goconst:
@@ -61,9 +59,24 @@ linters:
     - unparam
     # NOTE: It's a great linter, but gets in the way too often by not being customizable.
     - gochecknoglobals
-    # NOTE: False positives for values that are only used once in their appropriate places
-    # or `len(something) > 1` checks.
+    # NOTE: Full of false positives.
+    - interfacer
+    # NOTE: Function length is not an offense.
+    - funlen
+    # TODO: Fix false positives
     - gomnd
+    # NOTE: "Packages names should not use underscores" is not a good practice while mixed caps is also disallowed.
+    - stylecheck
+    # NOTE: Too verbose
+    - exhaustivestruct
+    # NOTE: Worse readability
+    - nlreturn
+    # NOTE: False-positives
+    - nestif
+    # NOTE: Deprecated
+    - maligned
+    # TODO: Enable and fix offences
+    - goerr113
 issues:
   exclude-rules:
     - text: "weak cryptographic primitive"

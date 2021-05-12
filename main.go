@@ -15,20 +15,42 @@
 package main
 
 import (
-	"github.com/hashicorp/terraform/plugin"
+	"context"
+	"flag"
+	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 	"github.com/sumup-oss/go-pkgs/logger"
 
-	"github.com/sumup-oss/terraform-provider-vaulted/provider"
+	"github.com/sumup-oss/terraform-provider-vaulted/internal/provider"
 )
 
-//nolint:deadcode,unused
+var version = "dev"
+
 func main() {
+	var debugMode bool
+
+	flag.BoolVar(
+		&debugMode,
+		"debug",
+		false,
+		"set to true to run the provider with support for debuggers like delve",
+	)
+	flag.Parse()
+
 	loggerInstance := logger.NewLogrusLogger()
 	loggerInstance.SetLevel(logger.InfoLevel)
 
-	plugin.Serve(
-		&plugin.ServeOpts{
-			ProviderFunc: provider.FuncWithLogger(loggerInstance),
-		},
-	)
+	opts := &plugin.ServeOpts{ProviderFunc: provider.New(loggerInstance, version)}
+
+	if debugMode {
+		err := plugin.Debug(context.Background(), "registry.terraform.io/sumup-oss/vaulted", opts)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		return
+	}
+
+	plugin.Serve(opts)
 }

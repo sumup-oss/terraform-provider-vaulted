@@ -15,15 +15,17 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
 	"regexp"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/sumup-oss/go-pkgs/executor/vault"
-
-	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/sumup-oss/go-pkgs/os"
 	"github.com/sumup-oss/vaulted/pkg/aes"
 	"github.com/sumup-oss/vaulted/pkg/base64"
@@ -35,9 +37,7 @@ import (
 	"github.com/sumup-oss/vaulted/pkg/vaulted/payload"
 )
 
-var (
-	newlinesRegex = regexp.MustCompile(`\r?\n`)
-)
+var newlinesRegex = regexp.MustCompile(`\r?\n`)
 
 func resourceVaultSecret() *schema.Resource {
 	return &schema.Resource{
@@ -47,7 +47,7 @@ func resourceVaultSecret() *schema.Resource {
 		Delete:        vaultSecretDelete,
 		Read:          vaultSecretRead,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"path": {
@@ -64,12 +64,42 @@ func resourceVaultSecret() *schema.Resource {
 				Sensitive:   true,
 			},
 		},
+		CustomizeDiff: customdiff.ValidateValue("payload_json", func(ctx context.Context, value, meta interface{}) error {
+			payloadJSON, ok := value.(string)
+			if !ok {
+				return errors.New("value is not a string")
+			}
+
+			client, ok := meta.(*vault.Client)
+			if !ok {
+				return errors.New("unexpected `meta` that's not a vault client")
+			}
+
+			cleanPayloadJSON := newlinesRegex.ReplaceAllString(payloadJSON, "")
+
+			_, err := decryptPayloadJSON(client, cleanPayloadJSON)
+			if err != nil {
+				return fmt.Errorf(
+					"failed to decrypt current `payload_json`. Err: %w",
+					err,
+				)
+			}
+
+			return nil
+		}),
 	}
 }
 
 func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*vault.Client)
-	path := d.Get("path").(string)
+	client, ok := meta.(*vault.Client)
+	if !ok {
+		return errors.New("unexpected `meta` that's not a vault client")
+	}
+
+	path, ok := d.Get("path").(string)
+	if !ok {
+		return errors.New("`path` is not a string")
+	}
 
 	payloadJSON, ok := d.Get("payload_json").(string)
 	if !ok {
@@ -80,7 +110,7 @@ func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
 		)
 	}
 
-	data, err := decryptPayloadJSON(client, path, payloadJSON)
+	data, err := decryptPayloadJSON(client, payloadJSON)
 	if err != nil {
 		return err
 	}
@@ -89,7 +119,7 @@ func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
 
 	_, err = client.Write(path, data)
 	if err != nil {
-		return fmt.Errorf("error writing to Vault %s. Err: %s", path, err)
+		return fmt.Errorf("error writing to Vault %s. Err: %w", path, err)
 	}
 
 	d.SetId(path)
@@ -98,7 +128,10 @@ func vaultSecretWrite(d *schema.ResourceData, meta interface{}) error {
 }
 
 func vaultSecretDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*vault.Client)
+	client, ok := meta.(*vault.Client)
+	if !ok {
+		return errors.New("unexpected `meta` that's not a vault client")
+	}
 
 	path := d.Id()
 
@@ -106,7 +139,7 @@ func vaultSecretDelete(d *schema.ResourceData, meta interface{}) error {
 
 	_, err := client.Delete(path)
 	if err != nil {
-		return fmt.Errorf("error deleting %q from Vault: %q", path, err)
+		return fmt.Errorf("error deleting %q from Vault: %w", path, err)
 	}
 
 	// NOTE: `SetId` is called automatically if return value is nil
@@ -114,7 +147,11 @@ func vaultSecretDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*vault.Client)
+	client, ok := meta.(*vault.Client)
+	if !ok {
+		return errors.New("unexpected `meta` that's not a vault client")
+	}
+
 	path := d.Id()
 
 	log.Printf("[DEBUG] Reading %s from Vault", path)
@@ -130,10 +167,10 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 
 	cleanPayloadJSON := newlinesRegex.ReplaceAllString(payloadJSON, "")
 
-	currentData, err := decryptPayloadJSON(client, path, cleanPayloadJSON)
+	currentData, err := decryptPayloadJSON(client, cleanPayloadJSON)
 	if err != nil {
 		return fmt.Errorf(
-			"failed to decrypt current `payload_json` at %s. Err: %s",
+			"failed to decrypt current `payload_json` at %s. Err: %w",
 			path,
 			err,
 		)
@@ -143,7 +180,7 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		// NOTE: Don't remove from terraform state,
 		// since it might be a network connectivity problem to Vault.
-		return fmt.Errorf("error reading from Vault. Err: %s", err)
+		return fmt.Errorf("error reading from Vault. Err: %w", err)
 	}
 
 	if secret == nil {
@@ -173,7 +210,7 @@ func vaultSecretRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func decryptPayloadJSON(client *vault.Client, path, payloadJSON string) (map[string]interface{}, error) {
+func decryptPayloadJSON(client *vault.Client, payloadJSON string) (map[string]interface{}, error) {
 	osExecutor := &os.RealOsExecutor{}
 	b64Svc := base64.NewBase64Service()
 	rsaSvc := rsa.NewRsaService(osExecutor)
@@ -188,13 +225,13 @@ func decryptPayloadJSON(client *vault.Client, path, payloadJSON string) (map[str
 	deserializedPayload, err := encPayloadSvc.Deserialize([]byte(payloadJSON))
 	if err != nil {
 		return nil,
-			fmt.Errorf("unable to deserialize `payload_json` at %s. Err: %s", path, err)
+			fmt.Errorf("unable to deserialize `payload_json`. Err: %w", err)
 	}
 
 	decryptedPayload, err := encPayloadSvc.Decrypt(client.PrivateKey(), deserializedPayload)
 	if err != nil {
 		return nil,
-			fmt.Errorf("unable to decrypt `payload_json` at %s. Err: %s", path, err)
+			fmt.Errorf("unable to decrypt `payload_json`. Err: %w", err)
 	}
 
 	// NOTE: Since Vault is providing a JSON REST API,
@@ -206,8 +243,7 @@ func decryptPayloadJSON(client *vault.Client, path, payloadJSON string) (map[str
 	if err != nil {
 		return nil,
 			fmt.Errorf(
-				"unable to unmarshal `payload_json` at path: %s. Syntax error: %s",
-				path,
+				"unable to unmarshal `payload_json`. Syntax error: %w",
 				err,
 			)
 	}

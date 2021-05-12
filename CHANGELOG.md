@@ -53,11 +53,23 @@ Change line format:
 
 ## Unreleased (master)
 
+### Added
+
+* Add validation during `plan` for `vaulted_vault_secret` ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/16
+
+### Changed
+
+* Updated to Terraform Plugin SDK v2 ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/16
+
+### Removed
+
+* Removed support for Terraform versions earlier than 0.11 and 0.11 itself ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/16
+
 ## v0.4.3
 
 ### Changed
 
-* Build with Golang 1.15.x (1.15.8) ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/
+* Build with Golang 1.15.x (1.15.8) ; Ref: https://github.com/sumup-oss/terraform-provider-vaulted/pull/9
 
 ## v0.4.2
 
