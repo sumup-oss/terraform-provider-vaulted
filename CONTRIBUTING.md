@@ -3,7 +3,7 @@
 ## Prerequisites
 
 * **Signed and verified CLA**.
-* Golang 1.15.x or use https://github.com/syndbg/goenv to use correct go version.
+* Golang 1.16.x or use https://github.com/syndbg/goenv to use correct go version.
 * (To run linter) https://github.com/golangci/golangci-lint in `$PATH`.
 * (To run integration tests) Docker 17/18.x.x installed and `docker` in `$PATH`.
 

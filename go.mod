@@ -4,8 +4,8 @@ go 1.13
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
-	github.com/hashicorp/vault v1.4.2
-	github.com/hashicorp/vault/api v1.0.5-0.20200317185738-82f498082f02
+	github.com/hashicorp/vault v1.6.7
+	github.com/hashicorp/vault/api v1.0.5-0.20201001211907-38d91b749c77
 	github.com/magefile/mage v1.8.0
 	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
 	github.com/stretchr/testify v1.6.1
