@@ -39,7 +39,7 @@ jobs:
         run: $(go env GOPATH)/bin/golangci-lint run --timeout=10m
         if: "matrix.os == 'ubuntu-latest'"
 
-      - uses: actions/cache@v2.1.6
+      - uses: actions/cache@v3.0.11
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
